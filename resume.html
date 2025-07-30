@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Professional Resume Builder</title>
+
+  <!-- ✅ PDF & Image Save Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ✅ Themes */
+    .theme-light { background: linear-gradient(to right, #f0f8ff, #e6e6fa); color: #000; }
+    .theme-dark { background: linear-gradient(to right, #1e1e2f, #2d2d44); color: white; }
+    .theme-pastel { background: linear-gradient(to right, #ffe0f0, #e0f7fa); color: #333; }
+    .theme-ocean { background: linear-gradient(to right, #a1c4fd, #c2e9fb); color: #003c6c; }
+    .theme-forest { background: linear-gradient(to right, #d0eac8, #b3dec1); color: #2e4e1e; }
+    .theme-sunset { background: linear-gradient(to right, #ff9a9e, #fad0c4); color: #531616; }
+    .theme-royal { background: linear-gradient(to right, #d1c4e9, #b39ddb); color: #311b92; }
+    .theme-candy { background: linear-gradient(to right, #fceabb, #f8b500); color: #8e44ad; }
+    .theme-steel { background: linear-gradient(to right, #cfd9df, #e2ebf0); color: #2c3e50; }
+    .theme-peach { background: linear-gradient(to right, #ffd5cd, #ffe3e1); color: #6b4226; }
+
+    .theme-selector {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      border: 3px solid #90caf9;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #3949ab;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #1a237e;
+      font-size: 15px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #c5cae9;
+      background-color: #f3f4ff;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: linear-gradient(to right, #5c6bc0, #42a5f5);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #3949ab, #1e88e5);
+    }
+
+    .resume {
+      margin-top: 40px;
+      border-top: 3px dashed #9fa8da;
+      padding: 30px;
+      background: #f9f9ff;
+      border-radius: 15px;
+    }
+
+    .profile-pic {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto 20px;
+      border: 4px solid #64b5f6;
+    }
+
+    p { line-height: 1.6; margin-bottom: 10px; }
+
+    .section-title {
+      background-color: #e3f2fd;
+      padding: 6px 10px;
+      border-left: 5px solid #42a5f5;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #0d47a1;
+      font-size: 17px;
+    }
+
+    .download-button {
+      background-color: #66bb6a;
+    }
+
+    .save-image {
+      background-color: #ff9800;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body class="theme-light">
+  <div class="theme-selector">
+    <label for="theme-select"><strong>Select Background Theme:</strong></label>
+    <select id="theme-select" onchange="changeTheme()">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="pastel">Pastel</option>
+      <option value="ocean">Ocean</option>
+      <option value="forest">Forest</option>
+      <option value="sunset">Sunset</option>
+      <option value="royal">Royal</option>
+      <option value="candy">Candy</option>
+      <option value="steel">Steel</option>
+      <option value="peach">Peach</option>
+    </select>
+  </div>
+
+  <div class="container">
+    <h1>Professional Resume Builder</h1>
+    <form id="resumeForm">
+      <label>Full Name</label><input type="text" id="name" required>
+      <label>Date of Birth</label><input type="date" id="dob">
+      <label>Email</label><input type="email" id="email" required>
+      <label>Phone</label><input type="text" id="phone" required>
+      <label>Address</label><input type="text" id="address" required>
+      <label>Objective</label><textarea id="objective"></textarea>
+      <label>Education</label><textarea id="education" required></textarea>
+      <label>Experience</label><textarea id="experience" required></textarea>
+      <label>Skills</label><textarea id="skills" required></textarea>
+      <label>Projects</label><textarea id="projects"></textarea>
+      <label>Certifications</label><textarea id="certifications"></textarea>
+      <label>Languages</label><textarea id="languages"></textarea>
+      <label>Hobbies</label><textarea id="hobbies"></textarea>
+      <label>Upload Photo</label><input type="file" id="photo" accept="image/*">
+      <button type="button" onclick="generateResume()">Create Resume</button>
+    </form>
+
+    <div class="resume" id="resumeOutput" style="display:none;">
+      <img id="resumePhoto" class="profile-pic" src="" alt="Photo">
+      <h2 id="outputName"></h2>
+      <p><strong>DOB:</strong> <span id="outputDOB"></span></p>
+      <p><strong>Email:</strong> <span id="outputEmail"></span> | <strong>Phone:</strong> <span id="outputPhone"></span></p>
+      <p><strong>Address:</strong> <span id="outputAddress"></span></p>
+
+      <div class="section-title">Objective</div>
+      <p id="outputObjective"></p>
+
+      <div class="section-title">Education</div>
+      <p id="outputEducation"></p>
+
+      <div class="section-title">Experience</div>
+      <p id="outputExperience"></p>
+
+      <div class="section-title">Skills</div>
+      <p id="outputSkills"></p>
+
+      <div class="section-title">Projects</div>
+      <p id="outputProjects"></p>
+
+      <div class="section-title">Certifications</div>
+      <p id="outputCertifications"></p>
+
+      <div class="section-title">Languages</div>
+      <p id="outputLanguages"></p>
+
+      <div class="section-title">Hobbies</div>
+      <p id="outputHobbies"></p>
+
+      <button class="download-button" onclick="downloadPDF()">Download as PDF</button>
+      <button class="save-image" onclick="saveAsImage()">Save as Image</button>
+    </div>
+  </div>
+
+  <script>
+    function generateResume() {
+      document.getElementById('resumeOutput').style.display = 'block';
+      document.getElementById('outputName').innerText = document.getElementById('name').value;
+      document.getElementById('outputDOB').innerText = document.getElementById('dob').value;
+      document.getElementById('outputEmail').innerText = document.getElementById('email').value;
+      document.getElementById('outputPhone').innerText = document.getElementById('phone').value;
+      document.getElementById('outputAddress').innerText = document.getElementById('address').value;
+      document.getElementById('outputObjective').innerText = document.getElementById('objective').value;
+      document.getElementById('outputEducation').innerText = document.getElementById('education').value;
+      document.getElementById('outputExperience').innerText = document.getElementById('experience').value;
+      document.getElementById('outputSkills').innerText = document.getElementById('skills').value;
+      document.getElementById('outputProjects').innerText = document.getElementById('projects').value;
+      document.getElementById('outputCertifications').innerText = document.getElementById('certifications').value;
+      document.getElementById('outputLanguages').innerText = document.getElementById('languages').value;
+      document.getElementById('outputHobbies').innerText = document.getElementById('hobbies').value;
+
+      const file = document.getElementById('photo').files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('resumePhoto').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function changeTheme() {
+      const theme = document.getElementById('theme-select').value;
+      document.body.className = 'theme-' + theme;
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('resumeOutput');
+      html2pdf().set({
+        margin: 0.3,
+        filename: 'My_Resume.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      }).from(element).save();
+    }
+
+    function saveAsImage() {
+      html2canvas(document.getElementById("resumeOutput")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "resume_image.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
